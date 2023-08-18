@@ -14,9 +14,9 @@ const links = {
 };
 
 export const siteConfig = {
-  name: "Imauthentic",
+  name: "Nextjs boilerplate",
   description:
-    "An open source e-commerce skateshop build with everything new in Next.js 13.",
+    "An open source boilerplate build with everything new in Next.js 13.",
   url: "https://skateshop.sadmn.com",
   ogImage: "https://skateshop.sadmn.com/opengraph-image.png",
   // mainNav: [
