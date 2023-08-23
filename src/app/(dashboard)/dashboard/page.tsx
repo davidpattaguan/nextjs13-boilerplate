@@ -40,7 +40,7 @@ export default async function Home() {
               You don&apos;t have any collection yet. Start creating collections
               and add your documents.
             </EmptyPlaceholder.Description>
-            <Button>Create A Collection +</Button>
+            <Button>Create A Collection</Button>
           </EmptyPlaceholder>
         )}
       </div>

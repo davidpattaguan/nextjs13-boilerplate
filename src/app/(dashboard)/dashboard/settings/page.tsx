@@ -9,7 +9,7 @@ export default async function Home() {
   });
   return (
     <>
-      <UserEditForm initialData={user} />;
+      <UserEditForm initialData={user} />
     </>
   );
 }

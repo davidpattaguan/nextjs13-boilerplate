@@ -21,6 +21,7 @@ import { DashboardShell } from "@/components/shells/dashboard-shell";
 import { DashboardHeader } from "@/components/shells/dashboard-header";
 import { AlertModal } from "@/components/modals/alert-modal";
 import { Icons } from "@/components/icons";
+import { useMutation } from "@tanstack/react-query";
 
 interface CollectionFormProps {
   initialData: Collection | null;
@@ -37,16 +38,13 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
   const router = useRouter();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const title = initialData ? "Edit Collection" : "Create Collection";
-  const description = initialData
-    ? "Edit Billboard Description"
-    : "Add a new Billboard";
+  const description = initialData ? "Edit Collection" : "Add a new Collection";
 
   const toastMessage = initialData
     ? "Successfully Updated "
-    : "Billboard created";
+    : "Collection created";
 
   const action = initialData ? "Save Changes" : "Add New Collection";
 
@@ -55,44 +53,44 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
     defaultValues: initialData || { name: "" },
   });
 
-  const onSubmit = async (data: CollectionFormValue) => {
-    try {
-      setLoading(true);
-
+  const { mutate: createCollection, isLoading: creating } = useMutation({
+    mutationFn: async (data: CollectionFormValue) => {
       if (initialData) {
         await axios.patch(`/api/collections/${params.collectionId}`, data);
       } else {
         await axios.post(`/api/collections/`, data);
       }
-
+    },
+    onError: (err) => {
+      toast({ title: "Error!", variant: "destructive" });
+    },
+    onSuccess: (data) => {
       router.refresh();
       router.push(`/dashboard`);
       toast({ title: toastMessage });
-    } catch (error) {
-      console.log(error);
+    },
+  });
+
+  const { mutate: deleteCollection, isLoading: deleting } = useMutation({
+    mutationFn: async () => {
+      await axios.delete(`/api/collections/${params.collectionId}`);
+    },
+    onError: (err) => {
       toast({ title: "Error!", variant: "destructive" });
-    } finally {
-      setLoading(false);
-    }
+    },
+    onSuccess: (data) => {
+      router.refresh();
+      router.push(`/dashboard`);
+      toast({ title: "Successfully Deleted!" });
+    },
+  });
+
+  const onSubmit = async (data: CollectionFormValue) => {
+    createCollection(data);
   };
 
   const onDelete = async () => {
-    try {
-      setLoading(true);
-      await axios.delete(`/api/collections/${params.collectionId}`);
-      router.refresh();
-      router.push(`/dashboard`);
-      toast({ title: "Successfully Deleted Collection!" });
-    } catch (error) {
-      toast({
-        title: "Failed to Delete Collection",
-        description: "Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-      setOpen(false);
-    }
+    deleteCollection();
   };
 
   return (
@@ -101,14 +99,14 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
         isOpen={open}
         onClose={() => setOpen(false)}
         onConfirm={onDelete}
-        loading={loading}
+        loading={creating || deleting}
       />
       <DashboardShell className="mt-7">
         <DashboardHeader heading={title} text={description}>
           <div className="flex items-center justify-between">
             {initialData && (
               <Button
-                disabled={loading}
+                disabled={creating || deleting}
                 variant="destructive"
                 className="bg-red-500 gap-2"
                 onClick={() => {
@@ -137,7 +135,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
                       <FormLabel>Name</FormLabel>
                       <FormControl>
                         <Input
-                          disabled={loading}
+                          disabled={creating || deleting}
                           placeholder="Enter Collection Name"
                           {...field}
                         />
@@ -148,7 +146,11 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
                 />
               </div>
             </div>
-            <Button disabled={loading} className="ml-auto" type="submit">
+            <Button
+              disabled={creating || deleting}
+              className="ml-auto"
+              type="submit"
+            >
               {action}
             </Button>
           </form>

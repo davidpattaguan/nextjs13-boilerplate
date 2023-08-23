@@ -21,6 +21,7 @@ import { DashboardShell } from "@/components/shells/dashboard-shell";
 import { DashboardHeader } from "@/components/shells/dashboard-header";
 import { AlertModal } from "@/components/modals/alert-modal";
 import { Icons } from "@/components/icons";
+import { useMutation } from "@tanstack/react-query";
 
 interface CollectionFormProps {
   initialData: User | null;
@@ -37,72 +38,43 @@ const UserEditForm: React.FC<CollectionFormProps> = ({ initialData }) => {
   const router = useRouter();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const title = initialData ? "Edit User" : "Create Collection";
-  const description = initialData
-    ? "Edit Billboard Description"
-    : "Add a new Billboard";
+  const description = initialData ? "Edit User details" : "Add a new details";
 
-  const toastMessage = initialData
-    ? "Successfully Updated "
-    : "Billboard created";
+  const toastMessage = initialData ? "Successfully Updated " : "User created";
 
-  const action = initialData ? "Save Changes" : "Add New Collection";
+  const action = initialData ? "Save Changes" : "Add New User";
 
   const form = useForm<CollectionFormValue>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData as any,
   });
 
-  const onSubmit = async (data: CollectionFormValue) => {
-    try {
-      setLoading(true);
-
+  const { mutate: updateUser, isLoading } = useMutation({
+    mutationFn: async (data: CollectionFormValue) => {
       if (initialData) {
         await axios.patch(`/api/users/`, data);
       } else {
         await axios.post(`/api/collections/`, data);
       }
-
+    },
+    onError: (err) => {
+      toast({ title: "Error!", variant: "destructive" });
+    },
+    onSuccess: (data) => {
       router.refresh();
       router.push(`/dashboard`);
       toast({ title: toastMessage });
-    } catch (error) {
-      console.log(error);
-      toast({ title: "Error!", variant: "destructive" });
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+  });
 
-  const onDelete = async () => {
-    try {
-      setLoading(true);
-      await axios.delete(`/api/collections/${params.collectionId}`);
-      router.refresh();
-      router.push(`/dashboard`);
-      toast({ title: "Successfully Deleted Collection!" });
-    } catch (error) {
-      toast({
-        title: "Failed to Delete Collection",
-        description: "Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-      setOpen(false);
-    }
+  const onSubmit = async (data: CollectionFormValue) => {
+    updateUser(data);
   };
 
   return (
     <>
-      <AlertModal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        onConfirm={onDelete}
-        loading={loading}
-      />
       <DashboardShell className="mt-7">
         <DashboardHeader heading={title} text={description}></DashboardHeader>
 
@@ -121,7 +93,7 @@ const UserEditForm: React.FC<CollectionFormProps> = ({ initialData }) => {
                       <FormLabel>Name</FormLabel>
                       <FormControl>
                         <Input
-                          disabled={loading}
+                          disabled={isLoading}
                           placeholder="Enter Collection Name"
                           {...field}
                         />
@@ -132,7 +104,7 @@ const UserEditForm: React.FC<CollectionFormProps> = ({ initialData }) => {
                 />
               </div>
             </div>
-            <Button disabled={loading} className="ml-auto" type="submit">
+            <Button disabled={isLoading} className="ml-auto" type="submit">
               {action}
             </Button>
           </form>
