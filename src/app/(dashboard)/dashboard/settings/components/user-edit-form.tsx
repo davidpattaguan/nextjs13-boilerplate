@@ -23,7 +23,7 @@ import { AlertModal } from "@/components/modals/alert-modal";
 import { Icons } from "@/components/icons";
 import { useMutation } from "@tanstack/react-query";
 
-interface CollectionFormProps {
+interface UserFormProps {
   initialData: User | null;
 }
 
@@ -31,28 +31,28 @@ const formSchema = z.object({
   name: z.string().min(1),
 });
 
-type CollectionFormValue = z.infer<typeof formSchema>;
+type UserFormValue = z.infer<typeof formSchema>;
 
-const UserEditForm: React.FC<CollectionFormProps> = ({ initialData }) => {
+const UserEditForm: React.FC<UserFormProps> = ({ initialData }) => {
   const params = useParams();
   const router = useRouter();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
 
+  //Actions
   const title = initialData ? "Edit User" : "Create Collection";
   const description = initialData ? "Edit User details" : "Add a new details";
-
   const toastMessage = initialData ? "Successfully Updated " : "User created";
-
   const action = initialData ? "Save Changes" : "Add New User";
 
-  const form = useForm<CollectionFormValue>({
+  const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData as any,
   });
 
+  //Mutation - Update User
   const { mutate: updateUser, isLoading } = useMutation({
-    mutationFn: async (data: CollectionFormValue) => {
+    mutationFn: async (data: UserFormValue) => {
       if (initialData) {
         await axios.patch(`/api/users/`, data);
       } else {
@@ -69,7 +69,7 @@ const UserEditForm: React.FC<CollectionFormProps> = ({ initialData }) => {
     },
   });
 
-  const onSubmit = async (data: CollectionFormValue) => {
+  const onSubmit = async (data: UserFormValue) => {
     updateUser(data);
   };
 
