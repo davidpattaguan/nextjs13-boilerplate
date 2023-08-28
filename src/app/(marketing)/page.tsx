@@ -1,49 +1,14 @@
-import { Button, buttonVariants } from "@/components/ui/button";
-import { getAuthSession } from "@/lib/auth";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import Link from "next/link";
 
 export default async function Home() {
   return (
     <>
-      {/* <div className="container relative grid items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
-        <div className="md:p-6">
-          <div className="mx-auto flex w-full flex-col justify-center  sm:w-[550px]">
-            <div className="flex flex-col mt-5 lg:mt-5">
-              <h1 className="font-semibold text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
-                BoilerPlate
-              </h1>
-              <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
-                Where Trust Finds Its True Signature. A simple authentication
-                and verification app for your items.
-              </p>
-              <div className="space-x-4 mt-8">
-                <Link
-                  href="/sign-in"
-                  className={cn(
-                    buttonVariants({ size: "lg", variant: "default" }),
-                    "bg-primary"
-                  )}
-                >
-                  Get Started
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <img
-          alt="cover photo"
-          src="https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
-          className="h-full w-full object-cover max-h-[93vh] xs:hidden lg:flex mt-0 "
-        />
-      </div> */}
-
       <section className="space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">
         <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center">
           <h1 className="font-semibold text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
-            Next.js Simple Boilerplate
+            Startup Suite
           </h1>
           <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
             A Basic Starter Template for Next.js 13
@@ -150,15 +115,6 @@ export default async function Home() {
               </div>
             </div>
           </div>
-        </div>
-        <div className="mx-auto text-center md:max-w-[58rem]">
-          {/* <p className="leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-            Imauthentic is more than just an application – it's your partner in
-            building a world of trust and reliability. Whether you're a business
-            professional safeguarding important contracts or a savvy shopper
-            ensuring the quality of your purchases, we're here to empower you
-            with the confidence you deserve.
-          </p> */}
         </div>
       </section>
     </>
